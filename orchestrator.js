@@ -5,6 +5,7 @@ import { selectBackgroundMood } from "./steps/selectBackgroundMood.js"; // <--- 
 import { selectTextBehavior } from "./steps/selectTextBehavior.js"; // <--- New Import
 import { generateReelScript } from "./steps/generateReelScript.js";
 import { generateSoraVideo } from "./steps/generateSoraVideo.js"; // <--- New Import
+import { cleanCaption } from "./steps/cleanCaption.js"; // <--- New Import
 
 export async function runOrchestrator(payload = {}) {
   console.log("SSM Orchestrator started", { timestamp: new Date().toISOString() });
@@ -37,8 +38,11 @@ export async function runOrchestrator(payload = {}) {
 
     // --- STEP 3: Video Generation (Sequential) ---
     // Must run here because it relies on mood, behavior, and scriptLines
-    const publicVideoUrl = await generateSoraVideo(mood, textBehavior, scriptLines);
-
+   const [publicVideoUrl, safeCaption] = await Promise.all([
+      generateSoraVideo(mood, textBehavior, scriptLines),
+      cleanCaption(igText) // <--- Running concurrently
+    ]);
+    
     console.log("Video Generation Complete: ", publicVideoUrl);
     
     return {
@@ -51,7 +55,9 @@ export async function runOrchestrator(payload = {}) {
               line2: reelData["Line 2"],
               line3: reelData["Line 3"]
             },
-      videoUrl: publicVideoUrl,      facebook: {
+      videoUrl: publicVideoUrl,
+      safeCaption: safeCaption, // <--- Included in final return
+      facebook: {
         text: fbText
       },
       instagram: {
