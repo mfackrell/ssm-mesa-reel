@@ -1,11 +1,9 @@
-import OpenAI from 'openai';
+import { uploadToGCS } from "../helpers/uploadToGCS.js";
 
-// We use direct fetch here because sora-2 model support might not be 
-// fully typed in the current SDK version you are using.
 export async function generateSoraVideo(mood, textBehavior, scriptLines) {
   console.log("Starting Sora Video Generation...");
 
-  // 1. Construct the dynamic prompt
+  // 1. Construct the Prompt
   const prompt = `Create a short, minimalist vertical video suitable for Instagram Reels.
 
 ${mood}
@@ -20,7 +18,8 @@ Reveal the text line by line.
 Only one line should be visible at a time.
 Each new line replaces the previous line completely.
 Do not rewrite, summarize, soften, embellish, or interpret the text.
-Line 1 Text should appear on the opening image, each text line should last for 2.5 seconds. the text should fill the time frame an not loop
+Line 1 Text should appear on the opening image, each text line should last for 2.5 seconds. the text should fill the time frame an not loop.
+
 Text content:
  line 1:${scriptLines.line1}, line 2:${scriptLines.line2}, line 3:${scriptLines.line3}
 
@@ -34,38 +33,76 @@ No lyrics.
 No sound effects.
 subtle neutral ambient tone only.`;
 
-  // 2. Construct the Payload
-  const payload = {
-    model: "sora-2",
-    prompt: prompt,
-    size: "720x1280",
-    seconds: 8
-  };
+  const apiKey = process.env.OPENAI_API_KEY;
 
   try {
-    // Note: Verify the endpoint URL for sora-2 access. 
-    // Using standard OpenAI video endpoint structure.
-    const response = await fetch("https://api.openai.com/v1/videos/generations", {
+    // --- STEP A: START GENERATION ---
+    const createResponse = await fetch("https://api.openai.com/v1/videos", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+        "Authorization": `Bearer ${apiKey}`
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        model: "sora-2",
+        prompt: prompt,
+        size: "720x1280",
+        seconds: 8
+      })
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Sora API Request Failed: ${response.status} - ${errorText}`);
+    if (!createResponse.ok) {
+      const err = await createResponse.text();
+      throw new Error(`Sora Request Failed: ${createResponse.status} - ${err}`);
     }
 
-    const data = await response.json();
-    console.log("Sora Video request successful.");
-    
-    // Log the result for debugging
-    console.log(JSON.stringify(data, null, 2));
+    const jobData = await createResponse.json();
+    const videoId = jobData.id;
+    console.log(`Video Job Started. ID: ${videoId}`);
 
-    return data; 
+    // --- STEP B: POLL FOR COMPLETION ---
+    let status = "queued";
+    let attempts = 0;
+    const maxAttempts = 60; // 10 minutes (assuming 10s intervals)
+
+    while (["queued", "in_progress", "processing"].includes(status)) {
+      if (attempts >= maxAttempts) throw new Error("Video generation timed out.");
+      
+      await new Promise(r => setTimeout(r, 10000)); // Sleep 10 seconds
+      attempts++;
+
+      const checkResponse = await fetch(`https://api.openai.com/v1/videos/${videoId}`, {
+        headers: { "Authorization": `Bearer ${apiKey}` }
+      });
+
+      if (!checkResponse.ok) throw new Error("Failed to check video status");
+      
+      const checkData = await checkResponse.json();
+      status = checkData.status;
+      console.log(`...Video Status: ${status} (Attempt ${attempts})`);
+
+      if (status === "failed") {
+        throw new Error(`Video Generation Failed: ${checkData.error?.message || "Unknown error"}`);
+      }
+    }
+
+    // --- STEP C: DOWNLOAD VIDEO ---
+    // The MP4 content is available at /content endpoint
+    console.log("Video complete. Downloading content...");
+    const contentResponse = await fetch(`https://api.openai.com/v1/videos/${videoId}/content`, {
+      headers: { "Authorization": `Bearer ${apiKey}` }
+    });
+
+    if (!contentResponse.ok) throw new Error("Failed to download video content");
+
+    const arrayBuffer = await contentResponse.arrayBuffer();
+    const videoBuffer = Buffer.from(arrayBuffer);
+
+    // --- STEP D: UPLOAD TO YOUR BUCKET ---
+    const filename = `reel_video_${Date.now()}.mp4`;
+    const publicUrl = await uploadToGCS(videoBuffer, filename, 'video/mp4');
+
+    return publicUrl;
 
   } catch (error) {
     console.error("Error generating Sora video:", error);
