@@ -37,8 +37,10 @@ export async function runOrchestrator(payload = {}) {
 
     // --- STEP 3: Video Generation (Sequential) ---
     // Must run here because it relies on mood, behavior, and scriptLines
-    const videoResult = await generateSoraVideo(mood, textBehavior, scriptLines);
+    const publicVideoUrl = await generateSoraVideo(mood, textBehavior, scriptLines);
 
+    console.log("Video Generation Complete: ", publicVideoUrl);
+    
     return {
       status: "completed",
       topic: topic,
@@ -49,8 +51,7 @@ export async function runOrchestrator(payload = {}) {
               line2: reelData["Line 2"],
               line3: reelData["Line 3"]
             },
-      video: videoResult, // <--- Video output included here
-      facebook: {
+      videoUrl: publicVideoUrl,      facebook: {
         text: fbText
       },
       instagram: {
