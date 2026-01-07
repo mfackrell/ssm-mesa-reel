@@ -6,6 +6,7 @@ import { selectTextBehavior } from "./steps/selectTextBehavior.js"; // <--- New 
 import { generateReelScript } from "./steps/generateReelScript.js";
 import { generateSoraVideo } from "./steps/generateSoraVideo.js"; // <--- New Import
 import { cleanCaption } from "./steps/cleanCaption.js"; // <--- New Import
+import { triggerZapier } from "./steps/triggerZapier.js"; // <--- New Import
 
 export async function runOrchestrator(payload = {}) {
   console.log("SSM Orchestrator started", { timestamp: new Date().toISOString() });
@@ -44,6 +45,16 @@ export async function runOrchestrator(payload = {}) {
     ]);
     
     console.log("Video Generation Complete: ", publicVideoUrl);
+
+    // --- STEP 4: Zapier Trigger ---
+    const zapierPayload = {
+      "Safe IG Caption": safeCaption,
+      "Video URL": publicVideoUrl,
+      "Facebook Title": reelData.overlay_text, // Using Overlay Text as the Title/Headline
+      "Facebook Caption": fbText
+    };
+
+    await triggerZapier(zapierPayload);
     
     return {
       status: "completed",
