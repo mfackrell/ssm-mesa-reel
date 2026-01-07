@@ -2,7 +2,7 @@
 
 export async function triggerZapier({ title, description, videoUrl, tags }) {
   console.log("Triggering Zapier Webhook...");
-  const webhookUrl = "https://hooks.zapier.com/hooks/catch/19867794/uw8xf2r/";
+  const webhookUrl = "https://hooks.zapier.com/hooks/catch/19867794/uw0y7qi/";
 
   const payload = {
     title,
