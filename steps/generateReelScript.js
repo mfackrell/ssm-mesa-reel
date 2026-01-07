@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { cleanAndParseJson } from '../helpers/cleanJson.js'; // <--- Import Helper
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -78,11 +79,14 @@ Return only a valid JSON object in this format:
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      response_format: { type: "json_object" }, // Forces structured output
+      response_format: { type: "json_object" }, 
       temperature: 0.7,
     });
 
-    const script = JSON.parse(completion.choices[0].message.content);
+    // --- UPDATED LOGIC START ---
+    const rawContent = completion.choices[0].message.content;
+    const script = cleanAndParseJson(rawContent);
+    // --- UPDATED LOGIC END ---
 
     // --- LOGGING ---
     console.log("\n=== REEL SCRIPT RESPONSE START ===");
