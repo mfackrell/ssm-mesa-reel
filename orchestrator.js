@@ -3,8 +3,7 @@ import { generateInstagramCaption } from "./steps/generateInstagramCaption.js";
 import { generateFacebookCaption } from "./steps/generateFacebookCaption.js"; // Fixed import style
 import { selectBackgroundMood } from "./steps/selectBackgroundMood.js"; // <--- New Import
 import { selectTextBehavior } from "./steps/selectTextBehavior.js"; // <--- New Import
-import { generateReelScript } from "./steps/generateReelScript.js"; // <--- New Import
-
+import { generateReelScript } from "./steps/generateReelScript.js";
 
 export async function runOrchestrator(payload = {}) {
   console.log("SSM Orchestrator started", { timestamp: new Date().toISOString() });
@@ -16,7 +15,7 @@ export async function runOrchestrator(payload = {}) {
 
     // --- STEP 2: Content Generation (Concurrent) ---
     // Note: We pass 'topic' only. The functions handle their own OpenAI instances.
-    const [fbText, igText, mood, textBehavior, reelScript] = await Promise.all([
+    const [fbText, igText, mood, textBehavior, reelData] = await Promise.all([
       generateFacebookCaption(topic),
       generateInstagramCaption(topic),
       selectBackgroundMood(),
@@ -31,7 +30,11 @@ export async function runOrchestrator(payload = {}) {
       topic: topic,
       mood: mood,
       textBehavior: textBehavior, 
-      reelScript: reelScript, 
+      reelScript: {
+              line1: reelData["Line 1"],
+              line2: reelData["Line 2"],
+              line3: reelData["Line 3"]
+            }, 
       facebook: {
         text: fbText
       },
