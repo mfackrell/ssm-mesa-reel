@@ -1,13 +1,13 @@
 import { selectTopic } from "./steps/selectTopic.js";
 import { generateInstagramCaption } from "./steps/generateInstagramCaption.js";
-import { generateFacebookCaption } from "./steps/generateFacebookCaption.js"; // Fixed import style
-import { selectBackgroundMood } from "./steps/selectBackgroundMood.js"; // <--- New Import
-import { selectTextBehavior } from "./steps/selectTextBehavior.js"; // <--- New Import
+import { generateFacebookCaption } from "./steps/generateFacebookCaption.js";
+import { selectBackgroundMood } from "./steps/selectBackgroundMood.js";
+import { selectTextBehavior } from "./steps/selectTextBehavior.js";
 import { generateReelScript } from "./steps/generateReelScript.js";
-import { generateSoraVideo } from "./steps/generateSoraVideo.js"; // <--- New Import
+import { generateSoraVideo } from "./steps/generateSoraVideo.js"; 
 import { overlayVideoText } from "./steps/overlayVideoText.js";   // <--- New Import
-import { cleanCaption } from "./steps/cleanCaption.js"; // <--- New Import
-import { triggerZapier } from "./steps/triggerZapier.js"; // <--- New Import
+import { cleanCaption } from "./steps/cleanCaption.js"; 
+import { triggerZapier } from "./steps/triggerZapier.js";
 
 export async function runOrchestrator(payload = {}) {
   console.log("SSM Orchestrator started", { timestamp: new Date().toISOString() });
@@ -18,7 +18,6 @@ export async function runOrchestrator(payload = {}) {
     console.log(`Topic Selected: "${topic}"`);
 
     // --- STEP 2: Content Generation (Concurrent) ---
-    // Note: We pass 'topic' only. The functions handle their own OpenAI instances.
     const [fbText, igText, mood, textBehavior, reelData] = await Promise.all([
       generateFacebookCaption(topic),
       generateInstagramCaption(topic),
@@ -27,8 +26,6 @@ export async function runOrchestrator(payload = {}) {
       generateReelScript(topic)
     ]);
 
-    console.log("Content generated successfully.");
-
     // Extract script lines for clarity
     const scriptLines = {
         line1: reelData["Line 1"],
@@ -36,20 +33,18 @@ export async function runOrchestrator(payload = {}) {
         line3: reelData["Line 3"]
     };
 
-    console.log("Text/Script content generated. Starting Video Generation...");
+    console.log("Text/Script content generated.");
 
-    // --- STEP 3: Video Generation (Sequential) ---
-    // Must run here because it relies on mood, behavior, and scriptLines
-   const [publicVideoUrl, safeCaption] = await Promise.all([
-      generateSoraVideo(mood, textBehavior, scriptLines),
-      cleanCaption(igText) // <--- Running concurrently
-    ]);
+    // --- STEP 3: Generate Clean Video (Sora) ---
+    // We pass ONLY the mood. No text.
+    console.log("Generating clean background video...");
+    const cleanVideoUrl = await generateSoraVideo(mood);
+    console.log("Clean Video URL:", cleanVideoUrl);
+
+    // --- STEP 4: Overlay Text & Clean Caption (Concurrent) ---
+    // We do these together to save time.
+    console.log("Overlaying text via FFmpeg and cleaning caption...");
     
-    console.log("Video Generation Complete: ", publicVideoUrl);
-
-    // --- STEP 3: Overlay Text (FFmpeg) ---
-    // Now we send the video + text to your renderer
-    console.log("Overlaying text via FFmpeg...");
     const [finalVideoUrl, safeCaption] = await Promise.all([
        overlayVideoText(cleanVideoUrl, scriptLines),
        cleanCaption(igText)
@@ -57,34 +52,27 @@ export async function runOrchestrator(payload = {}) {
 
     console.log("Final Video Complete:", finalVideoUrl);
 
-    // --- STEP 4: Zapier Trigger ---
+    // --- STEP 5: Zapier Trigger ---
     const zapierPayload = {
       "Safe IG Caption": safeCaption,
-      "Video URL": publicVideoUrl,
-      "Facebook Title": reelData.overlay_text, // Using Overlay Text as the Title/Headline
+      "Video URL": finalVideoUrl, // <--- Sends the FINAL video with text
+      "Facebook Title": reelData.overlay_text,
       "Facebook Caption": fbText
     };
 
     await triggerZapier(zapierPayload);
     
+    // --- RETURN OBJECT ---
     return {
       status: "completed",
       topic: topic,
       mood: mood,
       textBehavior: textBehavior, 
-      reelScript: {
-              line1: reelData["Line 1"],
-              line2: reelData["Line 2"],
-              line3: reelData["Line 3"]
-            },
-      videoUrl: publicVideoUrl,
-      safeCaption: safeCaption, // <--- Included in final return
-      facebook: {
-        text: fbText
-      },
-      instagram: {
-        text: igText
-      }
+      reelScript: scriptLines,
+      videoUrl: finalVideoUrl, // <--- Correct URL
+      safeCaption: safeCaption, 
+      facebook: { text: fbText },
+      instagram: { text: igText }
     };
 
   } catch (error) {
