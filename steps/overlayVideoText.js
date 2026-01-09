@@ -1,7 +1,7 @@
 export async function overlayVideoText(videoUrl, scriptLines) {
   console.log("Preparing Text Overlay Payload...");
 
-  // Define standard timing for 3 lines (2.5s each, matching your logic)
+  // Define timing for 3 lines (2.5s each)
   const overlays = [
     { text: scriptLines.line1, start: 0, end: 2.5 },
     { text: scriptLines.line2, start: 2.5, end: 5.0 },
@@ -9,15 +9,16 @@ export async function overlayVideoText(videoUrl, scriptLines) {
   ];
 
   const payload = {
-    type: "video_text_overlay", // Differentiates this from the slideshow render
     videoUrl: videoUrl,
     overlays: overlays
   };
 
   console.log("[Overlay] Sending Payload:", JSON.stringify(payload, null, 2));
 
-  // NOTE: You must update your FFmpeg service URL if it's different
-  const response = await fetch("https://ffmpeg-test-710616455963.us-central1.run.app/overlay", { 
+  // The URL of your NEW service
+  const serviceUrl = "https://ffmpeg-textoverlay-710616455963.us-central1.run.app";
+
+  const response = await fetch(serviceUrl, { 
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
@@ -31,5 +32,5 @@ export async function overlayVideoText(videoUrl, scriptLines) {
   const json = await response.json();
   console.log("[Overlay] Success:", json);
 
-  return json.url; // Expecting { url: "https://storage.googleapis.com/..." }
+  return json.url; 
 }
