@@ -1,42 +1,29 @@
 import { uploadToGCS } from "../helpers/uploadToGCS.js";
 
-export async function generateSoraVideo(mood, textBehavior, scriptLines) {
-  console.log("Starting Sora Video Generation...");
+export async function generateSoraVideo(mood) {
+  console.log("Starting Sora Video Generation (Clean Background)...");
 
-  // 1. Construct the Prompt
   const prompt = `Create a short, minimalist vertical video suitable for Instagram Reels.
-
-${mood}
-
+9:16 Aspect Ratio.
+High resolution, cinematic lighting.
 No identifiable faces or characters.
-The background must support the text and never compete with it.
+No text, no captions, no overlays.
+The background must be clean and uncluttered to allow for text overlay later.
 
-Text behavior:
-${textBehavior}
-Display the text as part of the video itself.
-Reveal the text line by line.
-Only one line should be visible at a time.
-Each new line replaces the previous line completely.
-Do not rewrite, summarize, soften, embellish, or interpret the text.
-Line 1 Text should appear on the opening image, each text line should last for 2.5 seconds. the text should fill the time frame an not loop.
-
-Text content:
- line 1:${scriptLines.line1}, line 2:${scriptLines.line2}, line 3:${scriptLines.line3}
-
-Text styling:
-Text must be large, centered, and highly legible for mobile viewing.
-High contrast against the background.
+Visual Description:
+${mood}
 
 Audio:
 No voiceover.
 No lyrics.
 No sound effects.
-subtle neutral ambient tone only.`;
+Subtle neutral ambient tone only.`;
+
+  console.log("GENERATED PROMPT:", prompt);
 
   const apiKey = process.env.OPENAI_API_KEY;
 
   try {
-    // --- STEP A: START GENERATION ---
     const createResponse = await fetch("https://api.openai.com/v1/videos", {
       method: "POST",
       headers: {
@@ -44,10 +31,10 @@ subtle neutral ambient tone only.`;
         "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "sora-2",
+        model: "sora-2", 
         prompt: prompt,
         size: "720x1280",
-        seconds: "8"
+        seconds: "8" 
       })
     });
 
@@ -60,49 +47,34 @@ subtle neutral ambient tone only.`;
     const videoId = jobData.id;
     console.log(`Video Job Started. ID: ${videoId}`);
 
-    // --- STEP B: POLL FOR COMPLETION ---
+    // --- Poll for Completion ---
     let status = "queued";
     let attempts = 0;
-    const maxAttempts = 60; // 10 minutes (assuming 10s intervals)
-
     while (["queued", "in_progress", "processing"].includes(status)) {
-      if (attempts >= maxAttempts) throw new Error("Video generation timed out.");
-      
-      await new Promise(r => setTimeout(r, 10000)); // Sleep 10 seconds
+      if (attempts >= 60) throw new Error("Video generation timed out.");
+      await new Promise(r => setTimeout(r, 10000));
       attempts++;
 
       const checkResponse = await fetch(`https://api.openai.com/v1/videos/${videoId}`, {
         headers: { "Authorization": `Bearer ${apiKey}` }
       });
-
-      if (!checkResponse.ok) throw new Error("Failed to check video status");
-      
       const checkData = await checkResponse.json();
       status = checkData.status;
-      console.log(`...Video Status: ${status} (Attempt ${attempts})`);
-
-      if (status === "failed") {
-        throw new Error(`Video Generation Failed: ${checkData.error?.message || "Unknown error"}`);
-      }
+      console.log(`...Video Status: ${status}`);
+      
+      if (status === "failed") throw new Error(`Video Failed: ${checkData.error?.message}`);
     }
 
-    // --- STEP C: DOWNLOAD VIDEO ---
-    // The MP4 content is available at /content endpoint
-    console.log("Video complete. Downloading content...");
+    // --- Download & Upload ---
+    console.log("Video complete. Downloading...");
     const contentResponse = await fetch(`https://api.openai.com/v1/videos/${videoId}/content`, {
       headers: { "Authorization": `Bearer ${apiKey}` }
     });
-
-    if (!contentResponse.ok) throw new Error("Failed to download video content");
-
-    const arrayBuffer = await contentResponse.arrayBuffer();
-    const videoBuffer = Buffer.from(arrayBuffer);
-
-    // --- STEP D: UPLOAD TO YOUR BUCKET ---
-    const filename = `reel_video_${Date.now()}.mp4`;
-    const publicUrl = await uploadToGCS(videoBuffer, filename, 'video/mp4');
-
-    return publicUrl;
+    const buffer = Buffer.from(await contentResponse.arrayBuffer());
+    
+    // Save raw clean video
+    const filename = `raw_sora_background_${Date.now()}.mp4`;
+    return await uploadToGCS(buffer, filename, 'video/mp4');
 
   } catch (error) {
     console.error("Error generating Sora video:", error);
