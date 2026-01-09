@@ -5,6 +5,7 @@ import { selectBackgroundMood } from "./steps/selectBackgroundMood.js"; // <--- 
 import { selectTextBehavior } from "./steps/selectTextBehavior.js"; // <--- New Import
 import { generateReelScript } from "./steps/generateReelScript.js";
 import { generateSoraVideo } from "./steps/generateSoraVideo.js"; // <--- New Import
+import { overlayVideoText } from "./steps/overlayVideoText.js";   // <--- New Import
 import { cleanCaption } from "./steps/cleanCaption.js"; // <--- New Import
 import { triggerZapier } from "./steps/triggerZapier.js"; // <--- New Import
 
@@ -45,6 +46,16 @@ export async function runOrchestrator(payload = {}) {
     ]);
     
     console.log("Video Generation Complete: ", publicVideoUrl);
+
+    // --- STEP 3: Overlay Text (FFmpeg) ---
+    // Now we send the video + text to your renderer
+    console.log("Overlaying text via FFmpeg...");
+    const [finalVideoUrl, safeCaption] = await Promise.all([
+       overlayVideoText(cleanVideoUrl, scriptLines),
+       cleanCaption(igText)
+    ]);
+
+    console.log("Final Video Complete:", finalVideoUrl);
 
     // --- STEP 4: Zapier Trigger ---
     const zapierPayload = {
