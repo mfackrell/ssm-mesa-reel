@@ -163,7 +163,8 @@ Recognition must come from inside, not from instruction.
 =======
 
 YOU DIRECTIVE:
-Write a three line script to this person. That will draw their attention to events in their lives that will help them realize the situation that they are in.
+Write a three line script to this person about:${topic}
+That will draw their attention to events in their lives that will help them realize the situation that they are in.
 The goal is to show how seemingly small interactions lead to fear, and fear leads to self-erasure. This is repetative and not based on a single incident but on the accumulation over time that their personhood is disliked, less than, an inconvience (the abuser is trying to murder the victims soul.
 
 THE THREE LINES FORM A CAUSE–EFFECT CHAIN
@@ -218,11 +219,22 @@ This may be:
 • emotional punishment
 • or the quiet disappearance of their own voice
 
-Line 3 represents the moment they lose something:
-a thought unsaid,
-a need abandoned,
-a boundary dissolved,
-a part of themselves silenced.
+Line 3 must show an irreversible internal consequence.
+
+Not just silence.
+Not just avoidance.
+Not just compliance.
+
+It must show how the person learns:
+who they are allowed to be,
+what parts of themselves are acceptable,
+and what parts must disappear to keep connection.
+
+Line 3 should feel like a subtraction of self,
+not a strategy for safety.
+
+If Line 3 could be undone tomorrow → FAIL.
+
 
 It can be an external event or an internal collapse.
 What matters is that it feels inevitable and practiced.
