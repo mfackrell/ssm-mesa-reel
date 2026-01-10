@@ -162,58 +162,74 @@ They are receptive to:
 Recognition must come from inside, not from instruction.
 =======
 
-Each script has exactly three lines.
+YOU DIRECTIVE:
+Write a three line script to this person. That will draw their attention to events in their lives that will help them realize the situation that they are in.
+The goal is to show how seemingly small interactions lead to fear, and fear leads to self-erasure. This is repetative and not based on a single incident but on the accumulation over time that their personhood is disliked, less than, an inconvience (the abuser is trying to murder the victims soul.
 
-A successful script includes:
+THE THREE LINES FORM A CAUSE–EFFECT CHAIN
 
-Line 1: A normal, everyday situation inside a relationship that would seem harmless to an outsider.
-Line 2: An internal reaction that is disproportionate to the situation.
-Line 3: A specific outcome the person already expects, before it occurs.
+These lines are not independent observations.
+They are a single psychological sequence.
 
-
-RULES
-Use concrete, observable details
-Do not describe the partner
-Do not justify or explain
-Do not use therapeutic or motivational language
-
-OVERLAY TEXT
-
-Write one short line (3–7 words) that names the felt experience without labeling it.
-
-It should make someone pause and think,
-“Why does this feel familiar?”
+Line 1 causes Line 2.
+Line 2 forces Line 3.
 
 ────────────────────────────
-FAILURE CHECKS (REJECT OUTPUT IF TRUE)
+LINE 1 — THE NO-BIG-DEAL EVENT
 ────────────────────────────
-• If the situation sounds dramatic → FAIL
-• If the reaction sounds reasonable → FAIL
-• If the outcome is vague or generalized → FAIL
-• If the language explains, reassures, or teaches → FAIL
-• If abuse, trauma, growth, healing, or diagnosis is named → FAIL
-• If the partner is described → FAIL
+Line 1 is an ordinary, neutral moment.
+It should not require fear, explanation, or emotional management.
+
+To an outsider, nothing is happening.
+To the viewer’s nervous system, everything is about to happen.
+
+If Line 1 sounds like conflict, criticism, or drama → FAIL.
 
 ────────────────────────────
-STYLE RULES
+LINE 2 — THE LEARNED FEAR RESPONSE
 ────────────────────────────
-• Use concrete sensory or timing details
-• No moral framing
-• No therapeutic language
-• No advice
-• No resolution
-• No labels
+Line 2 is the involuntary reaction to Line 1.
 
-Let recognition happen without conclusion.
+This reaction exists because the viewer has learned,
+through repetition,
+that this moment often leads somewhere painful.
+
+The fear is not about Line 1.
+The fear is about what usually follows.
+
+This reaction must be:
+• pre-verbal
+• disproportionate
+• familiar
+• embarrassing to explain
+
+If Line 2 sounds reasonable or logical → FAIL.
 
 ────────────────────────────
-OVERLAY TEXT
+LINE 3 — THE CONSEQUENCE AND LOSS
 ────────────────────────────
-Write ONE short line (3–7 words).
+Line 3 shows what this fear is protecting them from — or costing them.
 
-It should name the felt experience without labeling it.
-It should feel exposing, not comforting.
-If it sounds inspirational, educational, or reassuring → reject it.
+This may be:
+• a predictable correction
+• a lecture
+• withdrawal
+• tension
+• emotional punishment
+• or the quiet disappearance of their own voice
+
+Line 3 represents the moment they lose something:
+a thought unsaid,
+a need abandoned,
+a boundary dissolved,
+a part of themselves silenced.
+
+It can be an external event or an internal collapse.
+What matters is that it feels inevitable and practiced.
+
+If Line 3 feels hopeful → FAIL.
+If Line 3 does not involve loss of self → FAIL.
+
 
 ────────────────────────────
 OUTPUT FORMAT (JSON ONLY)
