@@ -3,7 +3,7 @@ import { uploadToGCS } from "../helpers/uploadToGCS.js";
 export async function generateSoraVideo(mood) {
   console.log("Starting Sora Video Generation (Clean Background)...");
 
-  const prompt = `Create a short, minimalist vertical video suitable for Instagram Reels.
+  const prompt = `Create a short, vertical video suitable for Instagram Reels.
 9:16 Aspect Ratio.
 High resolution, cinematic lighting.
 No identifiable faces or characters.
@@ -14,9 +14,6 @@ Visual Description:
 ${mood}
 
 Audio:
-No voiceover.
-No lyrics.
-No sound effects.
 Subtle neutral ambient tone only.`;
 
   console.log("GENERATED PROMPT:", prompt);
