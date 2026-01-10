@@ -19,7 +19,7 @@ export async function selectBackgroundMood() {
     "Shadows of palm fronds swaying slowly on a warm terracotta wall", 
     "A single wild poppy nodding gently in a blurred grassy field", 
     "Close-up of a fountain pen resting on a thick, cream-colored page", 
-    "Out-of-focus candlelight reflecting off the surface of dark coffee"
+    "Out-of-focus candlelight reflecting off the surface of dark coffee",
     "Distant mountain horizon under a flat, gray sky",
     "Flat natural terrain of a dry field at twilight",
     "Lamplight in a quiet bedroom corner with warm amber tones",
