@@ -31,7 +31,7 @@ Subtle neutral ambient tone only.`;
         model: "sora-2", 
         prompt: prompt,
         size: "720x1280",
-        seconds: "8" 
+        seconds: "12" 
       })
     });
 
