@@ -3,9 +3,9 @@ export async function overlayVideoText(videoUrl, scriptLines) {
 
   // Define timing for 3 lines (2.5s each)
   const overlays = [
-    { text: scriptLines.line1, start: 0, end: 2.5 },
-    { text: scriptLines.line2, start: 2.5, end: 5.0 },
-    { text: scriptLines.line3, start: 5.0, end: 7.5 }
+    { text: scriptLines.line1, start: 0, end: 3. },
+    { text: scriptLines.line2, start: 3.0, end: 7.0 },
+    { text: scriptLines.line3, start: 7.0, end: 11.5 }
   ];
 
   const payload = {
