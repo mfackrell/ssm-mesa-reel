@@ -14,7 +14,6 @@ export async function selectBackgroundMood() {
     "Quiet neighborhood sidewalk with wet pavement after rain",
     "Still trees under a pale, hazy dawn sky",
     "Beach path with dune grass moving gently in the wind",
-    "Golden sunlight filtering through a translucent Monstera leaf", 
     "Macro view of ripples expanding in a dark stone basin", 
     "Shadows of palm fronds swaying slowly on a warm terracotta wall", 
     "A single wild poppy nodding gently in a blurred grassy field", 
