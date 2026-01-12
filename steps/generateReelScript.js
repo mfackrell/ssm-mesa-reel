@@ -162,92 +162,24 @@ They are receptive to:
 Recognition must come from inside, not from instruction.
 =======
 
-YOU DIRECTIVE:
-Write a three line script to this person about:${topic}
-That will draw their attention to events in their lives that will help them realize the situation that they are in.
-The goal is to show how seemingly small interactions lead to fear, and fear leads to self-erasure. This is repetative and not based on a single incident but on the accumulation over time that their personhood is disliked, less than, an inconvience (the abuser is trying to murder the victims soul.
+=======
+CRITICAL DIRECTIVE:
+Write a three line script specifically about: "${topic}"
 
-Strict Adherence: The script must be a specific manifestation of the provided TOPIC. Do not use generic relationship examples if they do not directly illustrate the unique psychological weight of the TOPIC.
+STRICT RULES:
+1. The script must be a specific manifestation of "${topic}". Do not use generic examples (no garage doors, no phone pings).
+2. Follow the CAUSE–EFFECT CHAIN: Line 1 causes Line 2; Line 2 forces Line 3.
 
-THE THREE LINES FORM A CAUSE–EFFECT CHAIN
+LINE 1 — THE NO-BIG-DEAL EVENT: 
+Ordinary, neutral moment. To an outsider, nothing is happening. If it sounds like conflict or drama -> FAIL.
 
-These lines are not independent observations.
-They are a single psychological sequence.
+LINE 2 — THE LEARNED FEAR RESPONSE: 
+The involuntary, pre-verbal, familiar reaction. The fear is not about Line 1, but what usually follows. If it sounds logical -> FAIL.
 
-Line 1 causes Line 2.
-Line 2 forces Line 3.
+LINE 3 — THE CONSEQUENCE AND LOSS: 
+The irreversible internal consequence. A subtraction of self. Who they are allowed to be disappears to keep connection. If it feels hopeful or lacks loss of self -> FAIL.
 
-────────────────────────────
-LINE 1 — THE NO-BIG-DEAL EVENT
-────────────────────────────
-Line 1 is an ordinary, neutral moment.
-It should not require fear, explanation, or emotional management.
-
-To an outsider, nothing is happening.
-To the viewer’s nervous system, everything is about to happen.
-
-If Line 1 sounds like conflict, criticism, or drama → FAIL.
-
-────────────────────────────
-LINE 2 — THE LEARNED FEAR RESPONSE
-────────────────────────────
-Line 2 is the involuntary reaction to Line 1.
-
-This reaction exists because the viewer has learned,
-through repetition,
-that this moment often leads somewhere painful.
-
-The fear is not about Line 1.
-The fear is about what usually follows.
-
-This reaction must be:
-• pre-verbal
-• disproportionate
-• familiar
-• embarrassing to explain
-
-If Line 2 sounds reasonable or logical → FAIL.
-
-────────────────────────────
-LINE 3 — THE CONSEQUENCE AND LOSS
-────────────────────────────
-Line 3 shows what this fear is protecting them from — or costing them.
-
-This may be:
-• a predictable correction
-• a lecture
-• withdrawal
-• tension
-• emotional punishment
-• or the quiet disappearance of their own voice
-
-Line 3 must show an irreversible internal consequence.
-
-Not just silence.
-Not just avoidance.
-Not just compliance.
-
-It must show how the person learns:
-who they are allowed to be,
-what parts of themselves are acceptable,
-and what parts must disappear to keep connection.
-
-Line 3 should feel like a subtraction of self,
-not a strategy for safety.
-
-If Line 3 could be undone tomorrow → FAIL.
-
-
-It can be an external event or an internal collapse.
-What matters is that it feels inevitable and practiced.
-
-If Line 3 feels hopeful → FAIL.
-If Line 3 does not involve loss of self → FAIL.
-
-
-────────────────────────────
-OUTPUT FORMAT (JSON ONLY)
-────────────────────────────
+OUTPUT FORMAT (JSON ONLY):
 {
   "Line 1": "[Trigger]",
   "Line 2": "[Response]",
