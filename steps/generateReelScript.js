@@ -170,6 +170,11 @@ STRICT RULES:
 1. The script must be a specific manifestation of "${topic}". Do not use generic examples (no garage doors, no phone pings).
 2. Follow the CAUSE–EFFECT CHAIN: Line 1 causes Line 2; Line 2 forces Line 3.
 
+STRICT PERSPECTIVE RULES:
+1. THE READER (You): Always address the reader in the SECOND PERSON ("You", "Your"). This applies to their internal feelings, body reactions, and actions.
+2. THE PARTNER (They): Always refer to the partner/abuser in the THIRD PERSON ("They", "Them", "Their"). This applies to their actions, moods, or presence.
+3. CONTRAST: Use this "You vs. They" dynamic to show how "Their" seemingly neutral action causes "Your" internal collapse.
+
 LINE 1 — THE NO-BIG-DEAL EVENT: 
 Ordinary, neutral moment. To an outsider, nothing is happening. If it sounds like conflict or drama -> FAIL.
 
