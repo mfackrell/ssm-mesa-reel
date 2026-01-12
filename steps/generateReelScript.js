@@ -167,6 +167,8 @@ Write a three line script to this person about:${topic}
 That will draw their attention to events in their lives that will help them realize the situation that they are in.
 The goal is to show how seemingly small interactions lead to fear, and fear leads to self-erasure. This is repetative and not based on a single incident but on the accumulation over time that their personhood is disliked, less than, an inconvience (the abuser is trying to murder the victims soul.
 
+Strict Adherence: The script must be a specific manifestation of the provided TOPIC. Do not use generic relationship examples if they do not directly illustrate the unique psychological weight of the TOPIC.
+
 THE THREE LINES FORM A CAUSE–EFFECT CHAIN
 
 These lines are not independent observations.
@@ -255,12 +257,13 @@ OUTPUT FORMAT (JSON ONLY)
 
 `;
 
-  const userPrompt = `
-TOPIC: ${topic}
+const userPrompt = `
+THE SPECIFIC FOCUS FOR THIS SCRIPT IS: ${topic}
 
-Generate the Reel Script (3 lines) and the Overlay Text based on the instructions above.
+Instructions: 
+Using the psychological profile provided in the system prompt, write the 3-line script specifically through the lens of ${topic}. 
 
-Return JSON only.
+Ensure Line 1 is a neutral moment related to this topic, Line 2 is the fear response specific to it, and Line 3 is the loss of self resulting from it.
 `;
 
   try {
