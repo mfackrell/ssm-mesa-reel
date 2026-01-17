@@ -214,10 +214,10 @@ Ensure Line 1 is a neutral moment related to this topic, Line 2 is the fear resp
         { role: "user", content: userPrompt },
       ],
       response_format: { type: "json_object" }, 
-      temperature: 0.7,
+      temperature: 0.8,
       top_p: 0.92,
       presence_penalty: 0.6,
-      frequency_penalty: 0.5
+      frequency_penalty: 0.7
     });
 
     const rawContent = completion.choices[0].message.content;
