@@ -169,7 +169,7 @@ Write a three line script specifically about: "${topic}"
 STRICT RULES:
 1. The script must be a specific manifestation of "${topic}". Do not use generic examples (no garage doors, no phone pings).
 2. Follow the CAUSE–EFFECT CHAIN: Line 1 causes Line 2; Line 2 forces Line 3.
-3. BREVITY IS MANDATORY: No line can exceed 10 words. Use short, punchy sentences.
+3. BREVITY IS MANDATORY: The reciepient is under a high mental load and needs short statements that land immediately.
 4. NO ADVERBS: Instead of "Your appetite vanishes instantly," use "You stop chewing."
 5. BODY OVER BRAIN: Line 2 must describe a physical sensation or a guteral reaction not a complex thought process.
 
