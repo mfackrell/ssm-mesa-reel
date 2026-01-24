@@ -35,20 +35,33 @@ ${mood}`;
 
 async function generateSVDVideo(imageUrl) {
   const res = await fetch(SVD_MANAGER_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image_url: imageUrl }),
-  });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ image_url: imageUrl }),
+});
 
-  if (!res.ok) throw new Error(await res.text());
+if (!res.ok && res.status !== 202) {
+  const err = await res.text();
+  throw new Error(`SVD Manager HTTP Error: ${res.status} - ${err}`);
+}
 
-  const json = await res.json();
+const data = await res.json();
+if (res.status === 202 && data.status === "submitted") {
+  // SUCCESS: job is running asynchronously
+  return {
+    state: "PROCESSING",
+    jobId: data.job_id
+  };
+}
 
-  if (json.status !== "complete" || !json.gcs_url) {
-    throw new Error(`SVD manager failed: ${JSON.stringify(json)}`);
-  }
+if (res.status === 200 && data.status === "complete") {
+  return {
+    state: "COMPLETE",
+    videoUrl: data.gcs_url
+  };
+}
 
-  return json.gcs_url;
+throw new Error(`Unexpected SVD response: ${JSON.stringify(data)}`);
 }
 
 export async function generateBackgroundVideo(mood) {
