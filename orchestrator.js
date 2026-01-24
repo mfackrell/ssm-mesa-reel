@@ -39,19 +39,16 @@ export async function runOrchestrator(payload = {}) {
     const backgroundResult = await generateBackgroundVideo(mood);
     console.log("Clean Video Result:", backgroundResult);
        
-    if (backgroundResult.state !== "COMPLETE") {
-      return {
-        status: "waiting_for_background_video",
-        jobId: backgroundResult.jobId,
-        topic: topic,
-        mood: mood,
-        textBehavior: textBehavior,
-        reelScript: scriptLines,
-        safeCaption: null,
-        facebook: { text: fbText },
-        instagram: { text: igText },
-      };
-    }
+    let backgroundResult;
+    
+    do {
+      backgroundResult = await generateBackgroundVideo(mood);
+    
+      if (backgroundResult.state !== "COMPLETE") {
+        await new Promise(r => setTimeout(r, 10000)); // wait 10s
+      }
+    } while (backgroundResult.state !== "COMPLETE");
+
 
 
     const [finalVideoUrl, safeCaption] = await Promise.all([
