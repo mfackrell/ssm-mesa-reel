@@ -36,27 +36,36 @@ export async function runOrchestrator(payload = {}) {
 
     console.log("Generating clean background video (SDXL -> FFmpeg)...");
 
-    const cleanVideoUrl = await generateBackgroundVideo(mood);
-    console.log("Clean Video URL:", cleanVideoUrl);
+    const backgroundResult = await generateBackgroundVideo(mood);
+    console.log("Clean Video Result:", backgroundResult);
+       
+    if (backgroundResult.state !== "COMPLETE") {
+      return {
+        status: "waiting_for_background_video",
+        jobId: backgroundResult.jobId,
+        topic: topic,
+        mood: mood,
+        textBehavior: textBehavior,
+        reelScript: scriptLines,
+        safeCaption: null,
+        facebook: { text: fbText },
+        instagram: { text: igText },
+      };
+    }
 
-    console.log("Overlaying text via FFmpeg and cleaning caption...");
 
     const [finalVideoUrl, safeCaption] = await Promise.all([
-      overlayVideoText(cleanVideoUrl, scriptLines),
+      overlayVideoText(backgroundResult.videoUrl, scriptLines),
       cleanCaption(igText),
     ]);
-
-    console.log("Final Video Complete:", finalVideoUrl);
-
-    const zapierPayload = {
+    
+    await triggerZapier({
       "Safe IG Caption": safeCaption,
       "Video URL": finalVideoUrl,
       "Facebook Title": reelData.overlay_text,
       "Facebook Caption": fbText,
-    };
-
-    await triggerZapier(zapierPayload);
-
+    });
+    
     return {
       status: "completed",
       topic: topic,
