@@ -35,24 +35,23 @@ export async function runOrchestrator(payload = {}) {
     console.log("Text/Script content generated.");
 
     console.log("Generating clean background video (SDXL -> FFmpeg)...");
-
-    const backgroundResult = await generateBackgroundVideo(mood);
-    console.log("Clean Video Result:", backgroundResult);
-           
-    const backgroundResult = await generateBackgroundVideo(mood);
     
-    return {
-      status: "background_video_submitted",
-      jobId: backgroundResult.jobId,
-      topic,
-      mood,
-      textBehavior,
-      reelScript: scriptLines,
-      facebook: { text: fbText },
-      instagram: { text: igText },
-    };
-
-
+    let backgroundResult = null;
+    
+    do {
+      backgroundResult = await generateBackgroundVideo(
+        mood,
+        backgroundResult?.jobId
+      );
+    
+      console.log("Background video state:", backgroundResult);
+    
+      if (backgroundResult.state !== "COMPLETE") {
+        // wait 10 seconds before checking again
+        await new Promise(resolve => setTimeout(resolve, 10000));
+      }
+    
+    } while (backgroundResult.state !== "COMPLETE");
 
     const [finalVideoUrl, safeCaption] = await Promise.all([
       overlayVideoText(backgroundResult.videoUrl, scriptLines),
