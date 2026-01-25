@@ -1,5 +1,23 @@
 // steps/generateBackgroundVideo.js
 
+import { Storage } from "@google-cloud/storage";
+
+const storage = new Storage();
+const BUCKET = "ssm-video-engine-output";
+
+async function getJobState(jobId) {
+  const file = storage.bucket(BUCKET).file(`jobs/${jobId}.json`);
+
+  try {
+    const [contents] = await file.download();
+    return JSON.parse(contents.toString());
+  } catch (err) {
+    if (err.code === 404) return null;
+    throw err;
+  }
+}
+
+
 const SDXL_URL = "https://sdxl-manager-710616455963.us-central1.run.app";
 const SVD_MANAGER_URL = "https://svd-video-manager-710616455963.us-central1.run.app";
 
@@ -64,9 +82,35 @@ if (res.status === 200 && data.status === "complete") {
 throw new Error(`Unexpected SVD response: ${JSON.stringify(data)}`);
 }
 
-export async function generateBackgroundVideo(mood) {
-  const baseImageUrl = await generateSDXLImage(mood);
-  return await generateSVDVideo(baseImageUrl);
+export async function generateBackgroundVideo(mood, existingJobId = null) {
+  if (existingJobId) {
+    const job = await getJobState(existingJobId);
+    if (job?.status === "complete") {
+      return {
+        state: "COMPLETE",
+        videoUrl: job.videoUrl,
+        jobId: existingJobId
+      };
+    }
+
+    return { state: "PROCESSING", jobId: existingJobId };
+  }
+
+  const imageUrl = await generateSDXLImage(mood);
+
+  const res = await fetch(SVD_MANAGER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image_url: imageUrl })
+  });
+
+  const data = await res.json();
+
+  return {
+    state: "PROCESSING",
+    jobId: data.job_id
+  };
 }
+
 
 
