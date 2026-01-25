@@ -40,7 +40,7 @@ async function generateSVDVideo(imageUrl) {
   body: JSON.stringify({ image_url: imageUrl }),
 });
 
-if (!res.ok && res.status !== 202) {
+if (!(res.status === 202 || res.status === 200)) {
   const err = await res.text();
   throw new Error(`SVD Manager HTTP Error: ${res.status} - ${err}`);
 }
