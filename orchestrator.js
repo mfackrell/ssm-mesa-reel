@@ -38,16 +38,19 @@ export async function runOrchestrator(payload = {}) {
 
     const backgroundResult = await generateBackgroundVideo(mood);
     console.log("Clean Video Result:", backgroundResult);
-       
-    let backgroundResult;
+           
+    const backgroundResult = await generateBackgroundVideo(mood);
     
-    do {
-      backgroundResult = await generateBackgroundVideo(mood);
-    
-      if (backgroundResult.state !== "COMPLETE") {
-        await new Promise(r => setTimeout(r, 10000)); // wait 10s
-      }
-    } while (backgroundResult.state !== "COMPLETE");
+    return {
+      status: "background_video_submitted",
+      jobId: backgroundResult.jobId,
+      topic,
+      mood,
+      textBehavior,
+      reelScript: scriptLines,
+      facebook: { text: fbText },
+      instagram: { text: igText },
+    };
 
 
 
