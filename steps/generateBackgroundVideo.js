@@ -35,7 +35,18 @@ ${mood}`;
     throw new Error(`SDXL Manager HTTP Error: ${res.status} - ${err}`);
   }
 
-  return await res.json();
+  const json = await res.json();
+  
+  // Normalize SDXL manager response to existing contract
+  if (json?.status === "pending" && typeof json?.jobId === "string") {
+    return { state: "PENDING", jobId: json.jobId };
+  }
+  
+  if (json?.status === "success" && typeof json?.public_url === "string") {
+    return { state: "COMPLETE", imageUrl: json.public_url };
+  }
+  
+  throw new Error(`Unexpected SDXL response: ${JSON.stringify(json)}`);
 }
 
 async function startSVD(imageUrl) {
