@@ -1,4 +1,4 @@
-// orchestrator.js
+// ssm-mesa-reel orchestrator.js
 
 import { selectTopic } from "./steps/selectTopic.js";
 import { generateInstagramCaption } from "./steps/generateInstagramCaption.js";
