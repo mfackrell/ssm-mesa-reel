@@ -112,9 +112,18 @@ export async function generateBackgroundVideo(mood, existingJobId) {
     try {
       const job = await readSvdJob(rootId);
 
-      if (job?.status === "COMPLETE" && typeof job?.final_video_url === "string") {
-        return { state: "COMPLETE", jobId: existingJobId, videoUrl: job.final_video_url };
-      }
+    if (
+      job?.status === "COMPLETE" &&
+      typeof job?.final_video_url === "string" &&
+      job?.chunks?.length === 4   // or TOTAL_LOOPS
+    ) {
+      return {
+        state: "COMPLETE",
+        jobId: existingJobId,
+        videoUrl: job.final_video_url
+      };
+    }
+
 
       return { state: "SVD_LOOPING", jobId: existingJobId };
     } catch (err) {
