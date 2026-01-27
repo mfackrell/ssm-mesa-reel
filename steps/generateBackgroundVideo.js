@@ -5,23 +5,16 @@ import { Storage } from "@google-cloud/storage";
 const storage = new Storage();
 const BUCKET = "ssm-video-engine-output";
 
-async function getJobState(jobId) {
-  const file = storage.bucket(BUCKET).file(`jobs/${jobId}.json`);
-
-  try {
-    const [contents] = await file.download();
-    return JSON.parse(contents.toString());
-  } catch (err) {
-    if (err.code === 404) return null;
-    throw err;
-  }
-}
-
-
 const SDXL_URL = "https://sdxl-manager-710616455963.us-central1.run.app";
 const SVD_MANAGER_URL = "https://svd-video-manager-710616455963.us-central1.run.app";
 
-async function generateSDXLImage(mood) {
+async function readSvdJob(rootId) {
+  const file = storage.bucket(BUCKET).file(`jobs/${rootId}.json`);
+  const [contents] = await file.download();
+  return JSON.parse(contents.toString());
+}
+
+async function startOrPollSDXL(mood, jobId) {
   const prompt = `Create a high-quality vertical 9:16 cinematic background image suitable for Instagram Reels.
 No identifiable faces or characters.
 No text, no captions, no overlays.
@@ -34,86 +27,89 @@ ${mood}`;
   const res = await fetch(SDXL_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({ prompt, jobId }),
   });
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`SDXL Request Failed: ${res.status} - ${err}`);
+    throw new Error(`SDXL Manager HTTP Error: ${res.status} - ${err}`);
   }
 
-  const json = await res.json();
-
-  if (json?.status !== "success" || typeof json?.public_url !== "string") {
-    throw new Error(`SDXL Response Missing public_url: ${JSON.stringify(json)}`);
-  }
-
-  return json.public_url;
+  return await res.json();
 }
 
-async function generateSVDVideo(imageUrl) {
+async function startSVD(imageUrl) {
   const res = await fetch(SVD_MANAGER_URL, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ image_url: imageUrl }),
-});
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image_url: imageUrl }),
+  });
 
-if (!(res.status === 202 || res.status === 200)) {
-  const err = await res.text();
-  throw new Error(`SVD Manager HTTP Error: ${res.status} - ${err}`);
-}
+  if (!(res.status === 202 || res.status === 200)) {
+    const err = await res.text();
+    throw new Error(`SVD Manager HTTP Error: ${res.status} - ${err}`);
+  }
 
-const data = await res.json();
-if (res.status === 202 && data.status === "submitted") {
-  // SUCCESS: job is running asynchronously
-  return {
-    state: "PROCESSING",
-    jobId: data.job_id
-  };
-}
+  const data = await res.json();
 
-if (res.status === 200 && data.status === "complete") {
-  return {
-    state: "COMPLETE",
-    videoUrl: data.gcs_url
-  };
-}
+  if (data?.state === "PENDING" && typeof data?.jobId === "string") {
+    return data.jobId;
+  }
 
-throw new Error(`Unexpected SVD response: ${JSON.stringify(data)}`);
+  throw new Error(`Unexpected SVD start response: ${JSON.stringify(data)}`);
 }
 
 export async function generateBackgroundVideo(mood, existingJobId) {
-  // 1. Check GCS first to see if the SVD job finished
-  if (existingJobId) {
-    const res = await fetch(`https://storage.googleapis.com/ssm-video-engine-output/jobs/${existingJobId}.json`);
-    if (res.ok) {
-        const job = await res.json();
-        if (job.status === "COMPLETE") {
-            return { state: "COMPLETE", videoUrl: job.chunks[0] }; // You'll want to stitch these later
-        }
-        return { state: "SVD_LOOPING", jobId: existingJobId };
+  // We use a single string jobId with a prefix so the orchestrator can keep passing one value.
+  // sdxl:<runpodJobId>  -> polling SDXL manager
+  // svd:<rootId>        -> polling GCS job state written by SVD manager
+
+  if (!existingJobId) {
+    const sdxl = await startOrPollSDXL(mood, null);
+
+    if (sdxl?.state === "PENDING" && typeof sdxl?.jobId === "string") {
+      return { state: "SDXL_PENDING", jobId: `sdxl:${sdxl.jobId}` };
+    }
+
+    if (sdxl?.state === "COMPLETE" && typeof sdxl?.imageUrl === "string") {
+      const rootId = await startSVD(sdxl.imageUrl);
+      return { state: "SVD_LOOPING", jobId: `svd:${rootId}` };
+    }
+
+    throw new Error(`Unexpected SDXL response: ${JSON.stringify(sdxl)}`);
+  }
+
+  if (existingJobId.startsWith("sdxl:")) {
+    const sdxlJobId = existingJobId.slice("sdxl:".length);
+    const sdxl = await startOrPollSDXL(mood, sdxlJobId);
+
+    if (sdxl?.state === "PENDING" && typeof sdxl?.jobId === "string") {
+      return { state: "SDXL_PENDING", jobId: `sdxl:${sdxl.jobId}` };
+    }
+
+    if (sdxl?.state === "COMPLETE" && typeof sdxl?.imageUrl === "string") {
+      const rootId = await startSVD(sdxl.imageUrl);
+      return { state: "SVD_LOOPING", jobId: `svd:${rootId}` };
+    }
+
+    throw new Error(`Unexpected SDXL poll response: ${JSON.stringify(sdxl)}`);
+  }
+
+  if (existingJobId.startsWith("svd:")) {
+    const rootId = existingJobId.slice("svd:".length);
+
+    try {
+      const job = await readSvdJob(rootId);
+
+      if (job?.status === "COMPLETE" && typeof job?.final_video_url === "string") {
+        return { state: "COMPLETE", jobId: existingJobId, videoUrl: job.final_video_url };
+      }
+
+      return { state: "SVD_LOOPING", jobId: existingJobId };
+    } catch (err) {
+      throw new Error(`Failed reading SVD job state for ${rootId}: ${err?.message || err}`);
     }
   }
 
-  // 2. Call SDXL Manager
-  const sdxlRes = await fetch("https://sdxl-manager-url...", {
-    method: "POST",
-    body: JSON.stringify({ prompt: mood, jobId: existingJobId })
-  });
-  const sdxlData = await sdxlRes.json();
-
-  if (sdxlData.state === "COMPLETE") {
-    // 3. SDXL is done! Now trigger SVD for the first time
-    const svdRes = await fetch("https://svd-video-manager-url...", {
-        method: "POST",
-        body: JSON.stringify({ image_url: sdxlData.imageUrl })
-    });
-    const svdData = await svdRes.json();
-    return { state: "SVD_STARTED", jobId: svdData.jobId };
-  }
-
-  return { state: "SDXL_PENDING", jobId: sdxlData.jobId };
+  throw new Error(`Unknown jobId format: ${existingJobId}`);
 }
-
-
-
