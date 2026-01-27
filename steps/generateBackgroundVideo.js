@@ -112,10 +112,16 @@ export async function generateBackgroundVideo(mood, existingJobId) {
     try {
       const job = await readSvdJob(rootId);
 
+    // HARD BLOCK: never allow COMPLETE until looping + stitching are truly finished
+    if (job?.status === "FINALIZING") {
+      return { state: "SVD_LOOPING", jobId: existingJobId };
+    }
+
+
     if (
       job?.status === "COMPLETE" &&
       typeof job?.final_video_url === "string" &&
-      job?.chunks?.length === 4   // or TOTAL_LOOPS
+      job?.chunks?.length === TOTAL_LOOPS
     ) {
       return {
         state: "COMPLETE",
@@ -123,7 +129,6 @@ export async function generateBackgroundVideo(mood, existingJobId) {
         videoUrl: job.final_video_url
       };
     }
-
 
       return { state: "SVD_LOOPING", jobId: existingJobId };
     } catch (err) {
