@@ -71,6 +71,16 @@ export async function runOrchestrator(payload = {}) {
         await new Promise(resolve => setTimeout(resolve, 10000));
       }
     }
+
+    if (
+      backgroundResult.state !== "COMPLETE" ||
+      !backgroundResult.videoUrl
+    ) {
+      throw new Error(
+        `Background video not ready. State=${backgroundResult.state}`
+      );
+    }
+
     
     const [finalVideoUrl, safeCaption] = await Promise.all([
       overlayVideoText(backgroundResult.videoUrl, scriptLines),
