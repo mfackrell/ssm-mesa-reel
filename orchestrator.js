@@ -38,49 +38,32 @@ export async function runOrchestrator(payload = {}) {
     
     let backgroundResult = null;
     
-    while (true) {
+    while (
+      !backgroundResult ||
+      backgroundResult.state !== "COMPLETE" ||
+      !backgroundResult.videoUrl
+    ) {
       backgroundResult = await generateBackgroundVideo(
         mood,
         backgroundResult?.jobId
       );
     
-      console.log("Background video state:", backgroundResult);
+      console.log("Polling background video:", backgroundResult);
     
-      // ✅ STOP polling SDXL once SVD has started
-      if (backgroundResult.state === "SVD_LOOPING") {
-        break;
-      }
-    
-      if (backgroundResult.state === "COMPLETE") {
-        break;
-      }
-    
-      // SDXL still running
-      await new Promise(resolve => setTimeout(resolve, 10000));
-    }
-
-    while (backgroundResult.state !== "COMPLETE") {
-      backgroundResult = await generateBackgroundVideo(
-        mood,
-        backgroundResult.jobId
-      );
-    
-      console.log("Polling SVD job:", backgroundResult);
-    
-      if (backgroundResult.state !== "COMPLETE") {
+      if (
+        backgroundResult.state !== "COMPLETE" ||
+        !backgroundResult.videoUrl
+      ) {
         await new Promise(resolve => setTimeout(resolve, 10000));
       }
     }
-
-    if (
-      backgroundResult.state !== "COMPLETE" ||
-      !backgroundResult.videoUrl
-    ) {
+    
+    // hard safety check (keep this)
+    if (!backgroundResult.videoUrl) {
       throw new Error(
         `Background video not ready. State=${backgroundResult.state}`
       );
     }
-
     
     const [finalVideoUrl, safeCaption] = await Promise.all([
       overlayVideoText(backgroundResult.videoUrl, scriptLines),
