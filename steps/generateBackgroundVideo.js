@@ -82,34 +82,37 @@ if (res.status === 200 && data.status === "complete") {
 throw new Error(`Unexpected SVD response: ${JSON.stringify(data)}`);
 }
 
-export async function generateBackgroundVideo(mood, existingJobId = null) {
+export async function generateBackgroundVideo(mood, existingJobId) {
+  // 1. Check GCS first to see if the SVD job finished
   if (existingJobId) {
-    const job = await getJobState(existingJobId);
-    if (job?.status === "complete") {
-      return {
-        state: "COMPLETE",
-        videoUrl: job.videoUrl,
-        jobId: existingJobId
-      };
+    const res = await fetch(`https://storage.googleapis.com/ssm-video-engine-output/jobs/${existingJobId}.json`);
+    if (res.ok) {
+        const job = await res.json();
+        if (job.status === "COMPLETE") {
+            return { state: "COMPLETE", videoUrl: job.chunks[0] }; // You'll want to stitch these later
+        }
+        return { state: "SVD_LOOPING", jobId: existingJobId };
     }
-
-    return { state: "PROCESSING", jobId: existingJobId };
   }
 
-  const imageUrl = await generateSDXLImage(mood);
-
-  const res = await fetch(SVD_MANAGER_URL, {
+  // 2. Call SDXL Manager
+  const sdxlRes = await fetch("https://sdxl-manager-url...", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image_url: imageUrl })
+    body: JSON.stringify({ prompt: mood, jobId: existingJobId })
   });
+  const sdxlData = await sdxlRes.json();
 
-  const data = await res.json();
+  if (sdxlData.state === "COMPLETE") {
+    // 3. SDXL is done! Now trigger SVD for the first time
+    const svdRes = await fetch("https://svd-video-manager-url...", {
+        method: "POST",
+        body: JSON.stringify({ image_url: sdxlData.imageUrl })
+    });
+    const svdData = await svdRes.json();
+    return { state: "SVD_STARTED", jobId: svdData.jobId };
+  }
 
-  return {
-    state: "PROCESSING",
-    jobId: data.job_id
-  };
+  return { state: "SDXL_PENDING", jobId: sdxlData.jobId };
 }
 
 
