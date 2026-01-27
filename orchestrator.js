@@ -38,7 +38,7 @@ export async function runOrchestrator(payload = {}) {
     
     let backgroundResult = null;
     
-    do {
+    while (true) {
       backgroundResult = await generateBackgroundVideo(
         mood,
         backgroundResult?.jobId
@@ -46,13 +46,32 @@ export async function runOrchestrator(payload = {}) {
     
       console.log("Background video state:", backgroundResult);
     
-      if (backgroundResult.state !== "COMPLETE") {
-        // wait 10 seconds before checking again
-        await new Promise(resolve => setTimeout(resolve, 10000));
+      // ✅ STOP polling SDXL once SVD has started
+      if (backgroundResult.state === "SVD_LOOPING") {
+        break;
       }
     
-    } while (backgroundResult.state !== "COMPLETE");
+      if (backgroundResult.state === "COMPLETE") {
+        break;
+      }
+    
+      // SDXL still running
+      await new Promise(resolve => setTimeout(resolve, 10000));
+    }
 
+    while (backgroundResult.state !== "COMPLETE") {
+      backgroundResult = await generateBackgroundVideo(
+        mood,
+        backgroundResult.jobId
+      );
+    
+      console.log("Polling SVD job:", backgroundResult);
+    
+      if (backgroundResult.state !== "COMPLETE") {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+      }
+    }
+    
     const [finalVideoUrl, safeCaption] = await Promise.all([
       overlayVideoText(backgroundResult.videoUrl, scriptLines),
       cleanCaption(igText),
