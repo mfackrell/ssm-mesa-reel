@@ -1,4 +1,4 @@
-// steps/generateBackgroundVideo.js
+// ssm-mesa-reel steps/generateBackgroundVideo.js
 
 import { Storage } from "@google-cloud/storage";
 
