@@ -35,10 +35,16 @@ export async function runOrchestrator(payload = {}) {
     console.log("Text/Script content generated.");
 
     console.log("Generating clean background video (SDXL -> FFmpeg)...");
-     
-    const backgroundResult = await generateBackgroundVideo(mood);
     
-    console.log("Background video complete:", backgroundResult);
+    let backgroundResult = null;
+    
+    do {
+      backgroundResult = await generateBackgroundVideo(
+        mood,
+        backgroundResult?.jobId
+      );
+    
+      console.log("Background video state:", backgroundResult);
     
       if (backgroundResult.state !== "COMPLETE") {
         // wait 10 seconds before checking again
