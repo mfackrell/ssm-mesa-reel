@@ -1,36 +1,42 @@
-export async function requestVideoRender(audioData, imageMap) {
+export async function requestVideoRender(videoUrl, overlays) {
+  const AUDIO_FILES = [
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-background-437820_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-background-437820_norm_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-background-437820_norm_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-violin-strings-453280_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-violin-strings-453280_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/dark-ambient-soundscape-dreamscape-462864_(1)_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/dark-ambient-soundscape-dreamscape-462864_(1)_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/dark-ambient-soundscape-dreamscape-462864_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/dark-ambient-soundscape-dreamscape-462864_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-background-437820_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/ambient-background-347405_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/bg_12s_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/bg_12s_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/cinematic-ambient-348342_norm_01.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/cinematic-ambient-348342_norm_02.mp3",
+    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/ambient-background-347405_norm_01.mp3"
+  ];
+
+  const audioUrl = AUDIO_FILES[Math.floor(Math.random() * AUDIO_FILES.length)];
+  console.log("[Render] Selected audio:", audioUrl);
+
+  
   console.log("Preparing Render Payload...");
 
-  // 1) Extract audio URL (must be a string)
-  const audioUrl = audioData?.fileUrl || audioData;
-  console.log("[Render] Raw audio input:", audioData);
-  console.log("[Render] Resolved audioUrl:", audioUrl);
-
-  if (!audioUrl || typeof audioUrl !== "string") {
-    throw new Error("Renderer payload missing required audio URL");
+  if (!videoUrl || typeof videoUrl !== "string") {
+    throw new Error("Renderer payload missing required videoUrl");
+  }
+  
+  if (!Array.isArray(overlays) || overlays.length === 0) {
+    throw new Error("Renderer payload missing overlays");
   }
 
-  // 2) Extract image URLs (must be strings), keep ordering by numeric suffix
-  const images = Object.keys(imageMap || {})
-    .sort((a, b) => {
-      const numA = parseInt(a.replace(/\D/g, '')) || 0; 
-      const numB = parseInt(b.replace(/\D/g, '')) || 0;
-      return numA - numB;
-    })
-    .map(key => imageMap[key])
-    .filter(url => typeof url === "string" && url.length > 0);
 
-  console.log("[Render] Raw imageMap keys:", Object.keys(imageMap || {}));
-  console.log("[Render] Filtered image URLs:", images);
-
-  if (images.length === 0) {
-    throw new Error("Renderer payload missing image URLs");
-  }
-
-  // 3) Construct Payload (urls only)
   const payload = {
-    images,
-    audio: audioUrl
+    videoUrl,
+    audio: audioUrl,
+    overlays
   };
 
   // Log it so you can verify it matches expected JSON
