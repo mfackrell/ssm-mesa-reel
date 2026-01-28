@@ -35,7 +35,7 @@ export async function requestVideoRender(videoUrl, overlays) {
 
   const payload = {
     videoUrl,
-    audio: audioUrl,
+    audioUrl,
     overlays
   };
 
