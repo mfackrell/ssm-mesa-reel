@@ -53,7 +53,8 @@ GENERATE NOW.
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      temperature: 1.0, 
+      temperature: 1.0,
+      top_p: 0.9
     });
 
     const caption = completion.choices[0].message.content;
