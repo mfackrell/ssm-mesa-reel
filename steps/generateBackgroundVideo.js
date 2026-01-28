@@ -50,6 +50,8 @@ ${mood}`;
 }
 
 async function startSVD(imageUrl) {
+  console.log("SVD payload:", JSON.stringify({ image_url: imageUrl }));
+
   const res = await fetch(SVD_MANAGER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
