@@ -117,12 +117,13 @@ export async function generateBackgroundVideo(mood, existingJobId) {
       return { state: "SVD_LOOPING", jobId: existingJobId };
     }
 
+    const TOTAL_LOOPS = 4;
 
     if (
       job?.status === "COMPLETE" &&
-      typeof job?.final_video_url === "string" &&
-      job?.chunks?.length === TOTAL_LOOPS
+      typeof job?.final_video_url === "string"
     ) {
+
       return {
         state: "COMPLETE",
         jobId: existingJobId,
