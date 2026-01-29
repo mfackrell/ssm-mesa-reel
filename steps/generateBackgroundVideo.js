@@ -15,7 +15,7 @@ async function readSvdJob(rootId) {
 }
 
 async function startOrPollSDXL(mood, jobId) {
-  const prompt = `Create a high-quality vertical 9:16 cinematic background image suitable for Instagram Reels.
+  const prompt = `Create a photorealistic background image suitable for Instagram Reels.
 No identifiable faces or characters.
 No text, no captions, no overlays.
 Clean and uncluttered composition designed for later text overlay.
