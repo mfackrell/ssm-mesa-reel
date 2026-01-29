@@ -43,7 +43,7 @@ export async function requestVideoRender(videoUrl, overlays) {
   console.log("[Render] Sending Payload:", JSON.stringify(payload, null, 2));
 
   // 4) Send Request
-  const response = await fetch("https://ffmpeg-textoverlay-710616455963.us-central1.run.app", {
+  const response = await fetch("https://ffmpeg-textoverlay-random-710616455963.us-central1.run.app", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
