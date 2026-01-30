@@ -31,7 +31,7 @@ export async function overlayVideoText(videoUrl, scriptLines) {
 
   const payload = {
     videoUrl: videoUrl,
-    audioUrl,
+    audioUrl: audioUrl,
     overlays: overlays
   };
 
