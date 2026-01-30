@@ -38,7 +38,7 @@ export async function overlayVideoText(videoUrl, scriptLines) {
   console.log("[Overlay] Sending Payload:", JSON.stringify(payload, null, 2));
 
   // The URL of your NEW service
-  const serviceUrl = "https://ffmpeg-textoverlay-710616455963.us-central1.run.app";
+  const serviceUrl = "https://ffmpeg-textoverlay-random-710616455963.us-central1.run.app";
 
   const response = await fetch(serviceUrl, { 
     method: "POST",
