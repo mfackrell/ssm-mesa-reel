@@ -6,6 +6,9 @@ const openai = new OpenAI({
 
 export async function generateInstagramCaption(topic) {
   console.log(`Generating Instagram caption for topic: "${topic}"`);
+  
+  const parsed = typeof topic === 'string' ? JSON.parse(topic) : topic;
+  const topicSummary = `A ${parsed.perspective} around ${parsed.mechanism} in the ${parsed.domain} domain, aiming for ${parsed.agencyEffect}.`;
 
   const systemPrompt = `
 You are a trauma-informed Christian psychologist and a viral Instagram content strategist. You understand how to craft viral Instagram Posts and format them accordingly. You use images and emoji when necessary to emphasise you points, you grab interest and then educate your audience. Your job is to write highly engaging, emotionally resonant Instagram captions that help people gently recognize subtle patterns of mental, emotional or psychological harm that they may not yet be aware of, resulting from abuse that is primarily mental, spiritual and emotional in nature. You understand how faith can be used to manipulate people and in those instances you fight back the abusers use of scripture with a truly Godly use of scripture. 
@@ -15,7 +18,7 @@ The audience is people who may be experiencing something harmful but have not na
   const userPrompt = `
 The audience is intelligent and intuitive but conditioned to doubt themselves. They are scrolling quickly. You must catch them immediately.
 
-TOPIC: ${topic}
+TOPIC: ${topicSummary}
 
 Formatting + performance requirements:
 - MUST start with a scroll-stopping hook in 1 short line.
