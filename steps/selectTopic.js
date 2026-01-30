@@ -60,27 +60,23 @@ const perspectives = [
   "quiet truth emerging"
 ];
 
-// -------- AXIS 4: INTENT --------
-const intents = [
-  "validate experience",
-  "name gently",
-  "invite reflection",
-  "surface awareness",
-  "reframe meaning",
-  "normalize uncertainty",
-  "ground in the present",
-  "create pause"
+// -------- AXIS 4: AGENCY EFFECT --------
+const agencyEffects = [
+  "self-recognition",
+  "permission without instruction",
+  "internal validation",
+  "choice awareness",
+  "cognitive slowing",
+  "emotional containment",
+  "self-trust reactivation",
+  "meaning without conclusion",
+  "felt safety",
+  "ownership of interpretation"
 ];
 
 // Utility
 function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// -------- TOPIC SYNTHESIS --------
-function synthesizeTopic({ domain, mechanism, perspective, intent }) {
-  // Keep this subtle and awakening — not diagnostic
-  return `A ${perspective} around ${mechanism} in the ${domain} domain that helps ${intent}.`;
 }
 
 // -------- PUBLIC API --------
@@ -91,7 +87,7 @@ export async function selectTopic() {
     domain: pickRandom(domains),
     mechanism: pickRandom(mechanisms),
     perspective: pickRandom(perspectives),
-    intent: pickRandom(intents)
+    agencyEffect: pickRandom(agencyEffects)
   };
 
   console.log("MESA Topic Selection:", selection);
