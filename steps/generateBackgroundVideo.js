@@ -36,6 +36,15 @@ const prompt = `
   ${mood}
   `;
 
+  // ✅ ADD THIS LOG — DO NOT CHANGE ANYTHING ELSE
+  console.log("[SDXL REQUEST]", JSON.stringify({
+    url: SDXL_URL,
+    payload: {
+      prompt,
+      jobId
+    }
+  }, null, 2));
+
   const res = await fetch(SDXL_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
