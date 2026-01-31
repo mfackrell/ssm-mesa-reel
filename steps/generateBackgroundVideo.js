@@ -15,14 +15,26 @@ async function readSvdJob(rootId) {
 }
 
 async function startOrPollSDXL(mood, jobId) {
-  const prompt = `Create a photorealistic background image suitable for Instagram Reels.
-No identifiable faces or characters.
-No text, no captions, no overlays.
-Clean and uncluttered composition designed for later text overlay.
-Clear high definition details.
-
-Visual Description:
-${mood}`;
+const prompt = `
+  Create a high-resolution, ultra-sharp background image suitable for Instagram Reels.
+  
+  Global focus across the entire frame.
+  Deep depth of field.
+  No background blur.
+  No bokeh.
+  No soft focus.
+  
+  Even, natural lighting with high contrast.
+  Crisp edges and fine texture detail.
+  Sharp from foreground to background.
+  
+  No identifiable faces or characters.
+  No text, no captions, no overlays.
+  Clean composition designed for text overlay.
+  
+  Visual Description:
+  ${mood}
+  `;
 
   const res = await fetch(SDXL_URL, {
     method: "POST",
