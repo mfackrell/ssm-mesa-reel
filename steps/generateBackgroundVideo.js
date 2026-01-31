@@ -105,7 +105,6 @@ export async function generateBackgroundVideo(mood, existingJobId) {
   }
 
   if (existingJobId.startsWith("sdxl:")) {
-    const sdxlJobId = existingJobId.slice("sdxl:".length);
     const sdxl = await startOrPollSDXL(mood, sdxlJobId);
 
     if (sdxl?.state === "PENDING" && typeof sdxl?.jobId === "string") {
