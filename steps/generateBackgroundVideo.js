@@ -16,23 +16,7 @@ async function readSvdJob(rootId) {
 
 async function startOrPollSDXL(mood, jobId) {
 const prompt = `
-  Create a high-resolution, ultra-sharp background image suitable for Instagram Reels.
-  
-  Global focus across the entire frame.
-  Deep depth of field.
-  No background blur.
-  No bokeh.
-  No soft focus.
-  
-  Even, natural lighting with high contrast.
-  Crisp edges and fine texture detail.
-  Sharp from foreground to background.
-  
-  No identifiable faces or characters.
-  No text, no captions, no overlays.
-  Clean composition designed for text overlay.
-  
-  Visual Description:
+  high-resolution, ultra-sharp image of
   ${mood}
   `;
 
