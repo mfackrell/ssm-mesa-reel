@@ -39,7 +39,7 @@ const prompt = `
   const res = await fetch(SDXL_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt, jobId }),
+    body: JSON.stringify({ prompt}),
   });
 
   if (!res.ok) {
