@@ -90,6 +90,7 @@ export async function generateBackgroundVideo(mood, existingJobId) {
   // svd:<rootId>        -> polling GCS job state written by SVD manager
 
   if (!existingJobId) {
+    const sdxlJobId = existingJobId.slice("sdxl:".length);
     const sdxl = await startOrPollSDXL(mood, null);
 
     if (sdxl?.state === "PENDING" && typeof sdxl?.jobId === "string") {
