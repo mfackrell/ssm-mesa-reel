@@ -16,7 +16,7 @@ async function readSvdJob(rootId) {
 
 async function startOrPollSDXL(mood, jobId) {
 const prompt = `
-  high-resolution, ultra-sharp image of
+  high-resolution image of
   ${mood}
   `;
 
