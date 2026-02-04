@@ -12,7 +12,6 @@ export async function overlayVideoText(videoUrl, scriptLines) {
     "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/emotional-background-437820_norm_01.mp3",
     "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/ambient-background-347405_norm_02.mp3",
     "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/bg_12s_norm_01.mp3",
-    "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/bg_12s_norm_02.mp3",
     "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/cinematic-ambient-348342_norm_01.mp3",
     "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/cinematic-ambient-348342_norm_02.mp3",
     "https://storage.googleapis.com/ssm-renders-8822/ssm-mesa-audio/ambient-background-347405_norm_01.mp3"
