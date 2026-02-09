@@ -60,6 +60,7 @@ STYLE
 
 Use simple concrete language.
 No explanations, advice, labels, psychology terms, or moral judgments.
+The reader is intelligent but under a high cognitive load. The statements should clearly and easily resonate without the requirement to process long or complicated statements.
 
 The lines should feel observed, not narrated.
 
