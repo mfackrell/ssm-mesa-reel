@@ -27,7 +27,7 @@ app.post("/run", async (req, res) => {
     timestamp: new Date().toISOString()
   });
 
-  runOrchestrator(req.body).catch(err => {
+  await runOrchestrator(req.body).catch(err => {
     console.error("Orchestrator error", err);
   });
 
