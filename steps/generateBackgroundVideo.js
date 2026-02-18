@@ -15,10 +15,7 @@ async function readSvdJob(rootId) {
 }
 
 async function startOrPollSDXL(mood, jobId) {
-const prompt = `
-  high-resolution image of
-  ${mood}
-  `;
+const prompt = `${mood}`;
 
   // ✅ ADD THIS LOG — DO NOT CHANGE ANYTHING ELSE
   console.log("[SDXL REQUEST]", JSON.stringify({
